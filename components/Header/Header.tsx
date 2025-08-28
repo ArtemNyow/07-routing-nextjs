@@ -1,22 +1,26 @@
-import Link from 'next/link'
-import css from './Header.module.css'
+import Link from "next/link";
+import css from "./Header.module.css";
+import { fetchTags } from "@/lib/api";
+import TagsMenu from "../TagsMenu/TagsMenu";
 
-export default function Header() {
-    return (
-        <header className={css.header}>
-  <Link href="/" aria-label="Home">
-    NoteHub
-  </Link>
-  <nav aria-label="Main Navigation">
-    <ul className={css.navigation}>
-      <li>
-        <Link href="/">Home</Link>
-      </li>
-      <li>
-        <Link href="/notes">Notes</Link>
-      </li>
-    </ul>
-  </nav>
-</header>
-)
+export default async function Header() {
+  const tags = await fetchTags();
+
+  return (
+    <header className={css.header}>
+      <Link href="/" aria-label="Home">
+        NoteHub
+      </Link>
+      <nav aria-label="Main Navigation">
+        <ul className={css.navigation}>
+          <li>
+            <Link href="/">Home</Link>
+          </li>
+          <li>
+            <TagsMenu tags={tags} />
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
 }
