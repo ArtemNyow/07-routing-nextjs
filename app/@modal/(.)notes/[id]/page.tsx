@@ -1,4 +1,5 @@
-import NotePreview from "@/components/NotePreview/NotePreview";
+import NotePreview from "./NotePreview/NotePreview";
+
 
 interface NoteModalPageProps {
   params: { id: string };
