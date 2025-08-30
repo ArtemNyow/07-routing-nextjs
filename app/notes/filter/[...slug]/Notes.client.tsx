@@ -23,7 +23,7 @@ export default function NotesClient({ initialTag = '', initialPage = 1 }: NotesC
   const [page, setPage] = useState(initialPage);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 500);
-  const [isCreateModalOpen, setCreateModalOpen] = useState(false); // тільки для Create Note
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
 
   const perPage = 12;
   const tag = initialTag === 'All' ? '' : initialTag;
@@ -31,12 +31,18 @@ export default function NotesClient({ initialTag = '', initialPage = 1 }: NotesC
   const { data, isLoading, isError } = useQuery<NotesResponse, Error>({
     queryKey: ['notes', page, tag, debouncedSearch],
     queryFn: () => fetchNotes(tag, page, perPage, debouncedSearch),
+    refetchOnWindowFocus: false,
   });
+
+  // скидаємо сторінку при зміні пошуку
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (isError) toast.error('Something went wrong.');
-    else if (data && data.notes.length === 0) toast.error('No notes found.');
-  }, [isError, data]);
+    else if (!isLoading && data?.notes.length === 0) toast.error('No notes found.');
+  }, [isError, data, isLoading]);
 
   return (
     <div className={css.app}>
@@ -58,7 +64,6 @@ export default function NotesClient({ initialTag = '', initialPage = 1 }: NotesC
       {isError && <ErrorMessage />}
       {!isLoading && !isError && <NoteList notes={data?.notes ?? []} />}
 
-      {/* Модалка для створення нотатки */}
       {isCreateModalOpen && (
         <Modal onClose={() => setCreateModalOpen(false)}>
           <NoteForm onCancel={() => setCreateModalOpen(false)} />

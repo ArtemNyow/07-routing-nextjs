@@ -4,10 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api';
 import Loader from '@/components/Loader/Loader';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
-import css from './NotePreview.module.css';
 import Modal from '@/components/Modal/Modal';
 import { useRouter } from 'next/navigation';
 import { Note } from '@/types/note';
+import css from './NotePreview.module.css';
 
 interface NotePreviewProps {
   noteId: string;
@@ -19,6 +19,7 @@ export default function NotePreviewClient({ noteId }: NotePreviewProps) {
   const { data, isLoading, isError } = useQuery<Note, Error>({
     queryKey: ['note', noteId],
     queryFn: () => fetchNoteById(noteId),
+    refetchOnMount: false,
   });
 
   if (isLoading) return <Loader />;
